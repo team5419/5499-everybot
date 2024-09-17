@@ -10,6 +10,8 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.AddressableLED;
+import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
@@ -153,7 +155,16 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("drive", kDrive);
     SmartDashboard.putData("Auto choices", m_chooser);
 
-
+    // Declares new led object at PWM port 3
+    AddressableLED led = new AddressableLED(3);
+    // Creates buffer
+    AddressableLEDBuffer led_buffer = new AddressableLEDBuffer(5);
+    // Sets RBG value of the led at index 0
+    led_buffer.setRGB(0,0,255,0);
+    // Updates data to the buffer
+    led.setData(led_buffer);
+    // Continously writes data to the led from the buffer
+    led.start();
 
     /*
      * Apply the current limit to the drivetrain motors
