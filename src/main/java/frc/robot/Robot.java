@@ -10,8 +10,8 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+// import com.ctre.phoenix.motorcontrol.ControlMode;
+// import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -44,8 +44,8 @@ public class Robot extends TimedRobot {
   // CANSparkBase leftFront = new CANSparkMax(2, MotorType.kBrushed);
   // CANSparkBase rightRear = new CANSparkMax(3, MotorType.kBrushed);
   // CANSparkBase rightFront = new CANSparkMax(4, MotorType.kBrushed);
-  // CANSparkBase motor = new CANSparkMax(1, MotorType.kBrushed);
-  private TalonSRX motor = new TalonSRX(6);
+  CANSparkBase motor = new CANSparkMax(1, MotorType.kBrushed);
+  // private TalonSRX motor = new TalonSRX(6);
 
   /*
    * A class provided to control your drivetrain. Different drive styles can be passed to differential drive:
@@ -214,7 +214,8 @@ public class Robot extends TimedRobot {
     // m_rollerClaw.setIdleMode(IdleMode.kBrake);
     // m_climber.setIdleMode(IdleMode.kBrake);
 
-    motor.set(ControlMode.PercentOutput, 10);
+    // motor.set(ControlMode.PercentOutput, 10);
+    motor.set(1.0);
   }
 
   /**
