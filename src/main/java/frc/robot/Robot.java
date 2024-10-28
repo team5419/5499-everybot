@@ -10,6 +10,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -26,6 +27,9 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    // 0 is the USB port to be used as indicated on Driver Station
+    XboxController controller = new XboxController(0);
+
     // Declares new led object at PWM port 3
     AddressableLED led = new AddressableLED(3);
     // Creates buffer
@@ -34,7 +38,7 @@ public class Robot extends TimedRobot {
     led_buffer.setRGB(0,0,255,0);
     // Updates data to the buffer
     led.setData(led_buffer);
-    // Continously writes data to the led from the buffer
+    // Continously writes data to the lecd from the buffer
     led.start();
     motor.set(ControlMode.PercentOutput, 10);
   }
