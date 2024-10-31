@@ -7,6 +7,7 @@ package frc.robot;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
@@ -20,7 +21,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
 public class Robot extends TimedRobot {
-    private final TalonSRX rightBackMotor = new TalonSRX(1);
+    private final VictorSPX rightBackMotor = new VictorSPX(1);
     private final TalonSRX rightFrontMotor = new TalonSRX(2);
     private final TalonSRX leftBackMotor = new TalonSRX(3);
     private final TalonSRX leftFrontMotor = new TalonSRX(4);
@@ -76,7 +77,7 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit() {
         rightBackMotor.follow(rightFrontMotor);
-        rightFrontMotor.setInverted(false);
+        rightFrontMotor.setInverted(true);
         rightBackMotor.setInverted(InvertType.FollowMaster);
 
         leftBackMotor.follow(leftFrontMotor);
