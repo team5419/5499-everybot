@@ -5,6 +5,7 @@
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.AddressableLED;
@@ -19,62 +20,79 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
 public class Robot extends TimedRobot {
-  private final TalonSRX motor = new TalonSRX(6);
+    private final TalonSRX rightBackMotor = new TalonSRX(1);
+    private final TalonSRX rightFrontMotor = new TalonSRX(2);
+    private final TalonSRX leftBackMotor = new TalonSRX(3);
+    private final TalonSRX leftFrontMotor = new TalonSRX(4);
+    private final TalonSRX rightShooterMotor = new TalonSRX(5);
+    private final TalonSRX leftShooterMotor = new TalonSRX(6);
 
-  /**
-   * This function is run when the robot is first started up and should be used for any
-   * initialization code.
-   */
-  @Override
-  public void robotInit() {
     // 0 is the USB port to be used as indicated on Driver Station
-    XboxController controller = new XboxController(0);
+    private XboxController controller = new XboxController(0);
 
-    // Declares new led object at PWM port 3
-    AddressableLED led = new AddressableLED(3);
-    // Creates buffer
-    AddressableLEDBuffer led_buffer = new AddressableLEDBuffer(5);
-    // Sets RBG value of the led at index 0
-    led_buffer.setRGB(0,0,255,0);
-    // Updates data to the buffer
-    led.setData(led_buffer);
-    // Continously writes data to the lecd from the buffer
-    led.start();
-    motor.set(ControlMode.PercentOutput, 10);
-  }
+    private final double SPEED = 1;
+    private final double TURN_SPEED = 0.4;
 
-  /**
-   * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
-   * that you want ran during disabled, autonomous, teleoperated and test modes.
-   */
-  @Override
-  public void robotPeriodic() {
-    SmartDashboard.putNumber("Time (seconds)", Timer.getFPGATimestamp());
-  }
+    /**
+      * This function is run when the robot is first started up and should be used for any
+     * initialization code.
+     */
+    @Override
+    public void robotInit() {
+        // Declares new led object at PWM port 3
+        // AddressableLED led = new AddressableLED(3);
+        // // Creates buffer
+        // AddressableLEDBuffer led_buffer = new AddressableLEDBuffer(5);
+        // // Sets RBG value of the led at index 0
+        // led_buffer.setRGB(0,0,255,0);
+        // // Updates data to the buffer
+        // led.setData(led_buffer);
+        // // Continously writes data to the lecd from the buffer
+        // led.start();
+    }
 
-  /** This function is called once when autonomous is enabled. */
-  @Override
-  public void autonomousInit() {
+    /**
+      * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
+     * that you want ran during disabled, autonomous, teleoperated and test modes.
+     */
+    @Override
+    public void robotPeriodic() {
+        SmartDashboard.putNumber("Time (seconds)", Timer.getFPGATimestamp());
+    }
 
-  }
+    /** This function is called once when autonomous is enabled. */
+    @Override
+    public void autonomousInit() {
 
-  /** This function is called periodically during autonomous. */
-  @Override
-  public void autonomousPeriodic() {
+    }
 
-  }
+    /** This function is called periodically during autonomous. */
+    @Override
+    public void autonomousPeriodic() {
 
-  /** This function is called once when teleop is enabled. */
-  @Override
-  public void teleopInit() {
+    }
 
-  }
+    /** This function is called once when teleop is enabled. */
+    @Override
+    public void teleopInit() {
+        rightBackMotor.follow(rightFrontMotor);
+        rightFrontMotor.setInverted(false);
+        rightBackMotor.setInverted(InvertType.FollowMaster);
 
-  /** This function is called periodically during operator control. */
-  @Override
-  public void teleopPeriodic() {
+        leftBackMotor.follow(leftFrontMotor);
+        leftFrontMotor.setInverted(true);
+        leftBackMotor.setInverted(InvertType.FollowMaster);
+    }
 
-  }
+    /** This function is called periodically during operator control. */
+    @Override
+    public void teleopPeriodic() {
+        double yInput = controller.getRawAxis(1);
+        double xInput = controller.getRawAxis(0);
+
+        leftFrontMotor.set(ControlMode.PercentOutput, yInput * SPEED - xInput * TURN_SPEED);
+        rightFrontMotor.set(ControlMode.PercentOutput, yInput * SPEED + xInput * TURN_SPEED);
+    }
 }
 
 /*
