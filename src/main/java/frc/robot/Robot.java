@@ -25,14 +25,17 @@ public class Robot extends TimedRobot {
     private final TalonSRX rightFrontMotor = new TalonSRX(2);
     private final TalonSRX leftBackMotor = new TalonSRX(3);
     private final TalonSRX leftFrontMotor = new TalonSRX(4);
-    private final TalonSRX rightShooterMotor = new TalonSRX(5);
-    private final TalonSRX leftShooterMotor = new TalonSRX(6);
+    private final VictorSPX shooterTop = new VictorSPX(5);
+    private final VictorSPX shooterBottom = new VictorSPX(6);
 
     // 0 is the USB port to be used as indicated on Driver Station
     private XboxController controller = new XboxController(0);
 
     private final double SPEED = 1;
     private final double TURN_SPEED = 0.4;
+
+    private boolean readying = false;
+    private boolean ready = false;
 
     /**
       * This function is run when the robot is first started up and should be used for any
@@ -77,12 +80,15 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit() {
         rightBackMotor.follow(rightFrontMotor);
-        rightFrontMotor.setInverted(true);
-        rightBackMotor.setInverted(InvertType.FollowMaster);
+        rightFrontMotor.setInverted(false);
+        rightBackMotor.setInverted(InvertType.OpposeMaster);
 
         leftBackMotor.follow(leftFrontMotor);
         leftFrontMotor.setInverted(true);
         leftBackMotor.setInverted(InvertType.FollowMaster);
+
+        // shooterTop.setInverted(true);
+        // shooterBottom.setInverted(true);
     }
 
     /** This function is called periodically during operator control. */
@@ -90,43 +96,22 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
         double yInput = controller.getRawAxis(1);
         double xInput = controller.getRawAxis(0);
+        double rightTriggerInput = controller.getRightTriggerAxis();
+        double leftTriggerInput = controller.getLeftTriggerAxis();
 
         leftFrontMotor.set(ControlMode.PercentOutput, yInput * SPEED - xInput * TURN_SPEED);
         rightFrontMotor.set(ControlMode.PercentOutput, yInput * SPEED + xInput * TURN_SPEED);
+        
+        // Shooter intake
+        if (!readying) {
+          // Maybe change this to a constant motor output
+          shooterTop.set(ControlMode.PercentOutput, -leftTriggerInput);
+          shooterBottom.set(ControlMode.PercentOutput, -leftTriggerInput);
+        }
+
+        if (controller.getRightBumperPressed()) {
+          readying = true;
+          // Ready shooter here
+        }
     }
 }
-
-/*
- * The kit of parts drivetrain is known as differential drive, tank drive or skid-steer drive.
- *
- * There are two common ways to control this drivetrain: Arcade and Tank
- *
- * Arcade allows one stick to be pressed forward/backwards to power both sides of the drivetrain to move straight forwards/backwards.
- * A second stick (or the second axis of the same stick) can be pushed left/right to turn the robot in place.
- * When one stick is pushed forward and the other is pushed to the side, the robot will power the drivetrain
- * such that it both moves fowards and turns, turning in an arch.
- *
- * Tank drive allows a single stick to control of a single side of the robot.
- * Push the left stick forward to power the left side of the drive train, causing the robot to spin around to the right.
- * Push the right stick to power the motors on the right side.
- * Push both at equal distances to drive forwards/backwards and use at different speeds to turn in different arcs.
- * Push both sticks in opposite directions to spin in place.
- *
- * arcardeDrive can be replaced with tankDrive like so:
- *
- * m_drivetrain.tankDrive(-m_driverController.getRawAxis(1), -m_driverController.getRawAxis(5))
- *
- * Inputs can be squared which decreases the sensitivity of small drive inputs.
- *
- * It literally just takes (your inputs * your inputs), so a 50% (0.5) input from the controller becomes (0.5 * 0.5) -> 0.25
- *
- * This is an option that can be passed into arcade or tank drive:
- * arcadeDrive(double xSpeed, double zRotation, boolean squareInputs)
- *
- *
- * For more information see:
- * https://docs.wpilib.org/en/stable/docs/software/hardware-apis/motors/wpi-drive-classes.html
- *
- * https://github.com/wpilibsuite/allwpilib/blob/main/wpilibj/src/main/java/edu/wpi/first/wpilibj/drive/DifferentialDrive.java
- *
- */
