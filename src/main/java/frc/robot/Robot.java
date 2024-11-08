@@ -1,18 +1,24 @@
 package frc.robot;
 
-import com.ctre.phoenix.CANifier.LEDChannel;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Predicate;
+
+import org.ejml.equation.Function;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+import com.ctre.phoenix.motorcontrol.can.VictorSPXPIDSetConfigUtil;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 
 public class Robot extends TimedRobot {
   private final VictorSPX rightBackMotor = new VictorSPX(1);
@@ -28,13 +34,15 @@ public class Robot extends TimedRobot {
   // Number of LEDs on the strip
   private final int LED_COUNT = 8;
   // 0 is the port the LED strip is connected to on the RoboRIO
-  private AddressableLED led = new AddressableLED(0);
-  private AddressableLEDBuffer led_buffer = new AddressableLEDBuffer(LED_COUNT);
+  private AddressableLED led = new AddressableLED(1);
+  private AddressableLEDBuffer ledBuffer = new AddressableLEDBuffer(LED_COUNT);
 
   // Magic constants
   private final double SPEED = 1;
   private final double TURN_SPEED = 0.4;
   private final double AUTO_WAIT_DELAY = 11;
+  private final double RUMBLE_CHANGE_SPEED = 0.02;
+  private final double INTAKE_STRENGTH = 0.5;
 
   private boolean readying = false;
 
@@ -43,11 +51,38 @@ public class Robot extends TimedRobot {
   private boolean rightTriggerDown = false;
   private boolean leftTriggerDown = false;
   
+  // LED strip
   private int lightIndex = 0;
+  private int lightHue = 0;
+
+  private double rumble = 0;
+  private double rumbleImportant = 0;
+
+  private List<Delay> delays = new ArrayList<>();
+
+  public class Delay {
+    private double startTime;
+    private double delayTime;
+    private Function callback;
+
+    public Delay(double _startTime, double _delayTime, Function _callback) {
+      startTime = _startTime;
+      delayTime = _delayTime;
+      callback = _callback;
+    }
+
+    public void update() {
+      if (Timer.getFPGATimestamp() >= startTime + delayTime) {
+
+      }
+    }
+  }
 
   // Called when the robot starts up
   @Override
   public void robotInit() {
+    hapticTap(3);
+
     rightBackMotor.follow(rightFrontMotor);
     rightFrontMotor.setInverted(false);
     rightBackMotor.setInverted(InvertType.OpposeMaster);
@@ -62,22 +97,27 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     SmartDashboard.putNumber("Time (seconds)", Timer.getFPGATimestamp());
 
-    // Sets RBG value of the led at index 0
-    led_buffer.setRGB(lightIndex, 255, 0, 255);
-    // Updates data to the buffer
-    led.setData(led_buffer);
-    // Continously writes data to the lecd from the buffer
-    led.start();
+    controller.setRumble(RumbleType.kBothRumble, rumbleImportant > 0 ? rumbleImportant : rumble);
 
-    lightIndex++;
-    if (lightIndex > LED_COUNT) {
-      
-    }
+    // // Sets HSV value of the led at index 0
+    // ledBuffer.setHSV(lightIndex, lightHue, 255, 255);
+    // // Updates data to the buffer
+    // led.setData(ledBuffer);
+    // // Continously writes data to the led from the buffer
+    // led.start();
+
+    // lightIndex++;
+    // lightHue++;
+
+    // if (lightIndex > LED_COUNT) lightIndex = 0;
+    // if (lightHue > 180) lightHue = 0;
   }
 
   // Called when autonomous is enabled
   @Override
   public void autonomousInit() {
+    hapticTap(2);
+
     // Readying
     shooterTop.set(ControlMode.PercentOutput, 1.0);
     
@@ -101,6 +141,8 @@ public class Robot extends TimedRobot {
     // Stop
     rightFrontMotor.set(ControlMode.PercentOutput, 0);
     leftFrontMotor.set(ControlMode.PercentOutput, 0);
+
+    lightHue = 0;
   }
 
   // Called every 60 ms in autonomous mode
@@ -112,7 +154,9 @@ public class Robot extends TimedRobot {
   // Called when teleop mode is enabled
   @Override
   public void teleopInit() {
+    hapticTap(2);
 
+    lightHue = 150;
   }
 
   // Called every 20 ms in teleop mode
@@ -123,6 +167,7 @@ public class Robot extends TimedRobot {
     double rightTriggerRaw = controller.getRightTriggerAxis();
     double leftTriggerRaw = controller.getLeftTriggerAxis();
 
+    // Trigger deadzones
     rightTriggerDown = rightTriggerRaw >= TRIGGER_DEADZONE;
     leftTriggerDown = leftTriggerRaw >= TRIGGER_DEADZONE;
 
@@ -137,8 +182,22 @@ public class Robot extends TimedRobot {
     shooterTop.set(ControlMode.PercentOutput, readying ? 1 : 0); 
 
     if (!readying) {
-      shooterTop.set(ControlMode.PercentOutput, -leftTriggerRaw);
-      shooterBottom.set(ControlMode.PercentOutput, -leftTriggerRaw);
-    }     
+      // Intake
+      shooterTop.set(ControlMode.PercentOutput, -leftTriggerRaw * INTAKE_STRENGTH);
+      shooterBottom.set(ControlMode.PercentOutput, -leftTriggerRaw * INTAKE_STRENGTH);
+
+      rumble = Math.max(rumble - RUMBLE_CHANGE_SPEED, 0);
+    } else {
+      rumble = Math.min(rumble + RUMBLE_CHANGE_SPEED, 1);
+    }
+  }
+
+  public void hapticTap(int count) {
+    for (int i = 0; i < count; i++) {
+      // Delay rumbleDelay = new Delay(Timer.getFPGATimestamp(), 0.5, () -> {
+      //   rumble = 1;
+      // });
+      // delays.add(rumbleDelay);
+    }
   }
 }
