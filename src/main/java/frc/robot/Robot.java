@@ -2,7 +2,6 @@ package frc.robot;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 
 import org.ejml.equation.Function;
 
@@ -10,7 +9,6 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
-import com.ctre.phoenix.motorcontrol.can.VictorSPXPIDSetConfigUtil;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
@@ -50,7 +48,7 @@ public class Robot extends TimedRobot {
   private final double TRIGGER_DEADZONE = 0.5;
   private boolean rightTriggerDown = false;
   private boolean leftTriggerDown = false;
-  
+
   // LED strip
   private int lightIndex = 0;
   private int lightHue = 0;
@@ -120,14 +118,14 @@ public class Robot extends TimedRobot {
 
     // Readying
     shooterTop.set(ControlMode.PercentOutput, 1.0);
-    
+
     Timer.delay(2);
-    
+
     // Shoot
     shooterBottom.set(ControlMode.PercentOutput, 1.0);
 
     Timer.delay(AUTO_WAIT_DELAY);
-    
+
     // Stop shooters
     shooterTop.set(ControlMode.PercentOutput, 0);
     shooterBottom.set(ControlMode.PercentOutput, 0);
@@ -135,7 +133,7 @@ public class Robot extends TimedRobot {
     // Move back
     rightFrontMotor.set(ControlMode.PercentOutput, 1);
     leftFrontMotor.set(ControlMode.PercentOutput, 1);
-    
+
     Timer.delay(0.5);
 
     // Stop
@@ -173,13 +171,13 @@ public class Robot extends TimedRobot {
 
     leftFrontMotor.set(ControlMode.PercentOutput, yInput * SPEED - xInput * TURN_SPEED);
     rightFrontMotor.set(ControlMode.PercentOutput, yInput * SPEED + xInput * TURN_SPEED);
-    
+
     // Shooting
     shooterBottom.set(ControlMode.PercentOutput, rightTriggerDown ? 1 : 0);
 
     // Readying
     readying = controller.getLeftBumper();
-    shooterTop.set(ControlMode.PercentOutput, readying ? 1 : 0); 
+    shooterTop.set(ControlMode.PercentOutput, readying ? 1 : 0);
 
     if (!readying) {
       // Intake
