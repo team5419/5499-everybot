@@ -3,8 +3,6 @@ package frc.robot;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ejml.equation.Function;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -38,7 +36,7 @@ public class Robot extends TimedRobot {
   // Magic constants
   private final double SPEED = 1;
   private final double TURN_SPEED = 0.4;
-  private final double AUTO_WAIT_DELAY = 11;
+  private final double AUTO_WAIT_DELAY = 10;
   private final double RUMBLE_CHANGE_SPEED = 0.02;
   private final double INTAKE_STRENGTH = 0.5;
 
@@ -61,9 +59,13 @@ public class Robot extends TimedRobot {
   public class Delay {
     private double startTime;
     private double delayTime;
-    private Function callback;
+    Callback callback;
 
-    public Delay(double _startTime, double _delayTime, Function _callback) {
+    public interface Callback {
+      public void callback();
+    }
+
+    public Delay(double _startTime, double _delayTime, Callback _callback) {
       startTime = _startTime;
       delayTime = _delayTime;
       callback = _callback;
@@ -109,6 +111,8 @@ public class Robot extends TimedRobot {
 
     if (lightIndex > LED_COUNT) lightIndex = 0;
     if (lightHue > 180) lightHue = 0;
+
+    for (Delay delay : delays) delay.update();
   }
 
   // Called when autonomous is enabled
@@ -119,7 +123,7 @@ public class Robot extends TimedRobot {
     // Readying
     shooterTop.set(ControlMode.PercentOutput, 1.0);
 
-    Timer.delay(2);
+    Timer.delay(3);
 
     // Shoot
     shooterBottom.set(ControlMode.PercentOutput, 1.0);
@@ -192,10 +196,13 @@ public class Robot extends TimedRobot {
 
   public void hapticTap(int count) {
     for (int i = 0; i < count; i++) {
-      // Delay rumbleDelay = new Delay(Timer.getFPGATimestamp(), 0.5, () -> {
-      //   rumble = 1;
-      // });
-      // delays.add(rumbleDelay);
+      Delay rumbleDelay = new Delay(
+        Timer.getFPGATimestamp(),
+        0.5,
+        () -> { rumble = 1; }
+      );
+
+      delays.add(rumbleDelay);
     }
   }
 }
