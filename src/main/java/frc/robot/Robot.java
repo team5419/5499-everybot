@@ -60,9 +60,9 @@ public class Robot extends TimedRobot {
   private Delay readyDelay;
 
   public class Delay {
-    private double startTime;
-    private double delayTime;
-    Callback callback;
+    public double startTime;
+    public double delayTime;
+    public Callback callback;
 
     public interface Callback {
       public void callback();
@@ -76,7 +76,7 @@ public class Robot extends TimedRobot {
 
     public void update() {
       if (Timer.getFPGATimestamp() >= startTime + delayTime) {
-
+        callback.callback();
       }
     }
   }
