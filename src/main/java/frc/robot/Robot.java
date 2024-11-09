@@ -127,6 +127,8 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     hapticTap(2);
 
+    Timer.delay(3);
+
     // Readying
     shooterTop.set(ControlMode.PercentOutput, 1.0);
 
