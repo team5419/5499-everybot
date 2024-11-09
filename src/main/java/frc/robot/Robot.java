@@ -33,15 +33,22 @@ public class Robot extends TimedRobot {
   private AddressableLED led = new AddressableLED(1);
   private AddressableLEDBuffer ledBuffer = new AddressableLEDBuffer(LED_COUNT);
 
-  // Magic constants
+  private final double AUTO_WAIT_DELAY = 9;
+
+  // Speeds
   private final double SPEED = 1;
   private final double TURN_SPEED = 0.55;
-  private final double AUTO_WAIT_DELAY = 9;
-  private final double RUMBLE_CHANGE_SPEED = 0.02;
   private final double INTAKE_STRENGTH = 0.5;
-  private final double READY_DELAY = 1.5;
 
+  // Ready
+  private final double READY_DELAY = 1.5;
   private boolean ready = false;
+
+  // Clean mode
+  private final double CLEAN_MODE_SPEED = 0.1;
+  private final double CLEAN_MODE_ACTIVATE_TIME = 3;
+  private boolean cleanMode = false;
+  private double cleanTimestamp = 0.0;
 
   // Trigger input
   private final double TRIGGER_DEADZONE = 0.5;
@@ -52,6 +59,8 @@ public class Robot extends TimedRobot {
   private int lightIndex = 0;
   private int lightHue = 0;
 
+  // Rumble
+  private final double RUMBLE_CHANGE_SPEED = 0.02;
   private double rumble = 0;
   private double rumbleImportant = 0;
 
@@ -169,45 +178,59 @@ public class Robot extends TimedRobot {
   // Called every 20 ms in teleop mode
   @Override
   public void teleopPeriodic() {
-    double yInput = controller.getRawAxis(1);
-    double xInput = controller.getRawAxis(0);
-    double rightTriggerRaw = controller.getRightTriggerAxis();
-    double leftTriggerRaw = controller.getLeftTriggerAxis();
+    if (controller.getAButtonPressed()) cleanTimestamp = Timer.getFPGATimestamp();
+    if (
+      controller.getAButton() &&
+      Timer.getFPGATimestamp() > cleanTimestamp + CLEAN_MODE_ACTIVATE_TIME
+    ) {
+      cleanMode = !cleanMode;
+      cleanTimestamp = Timer.getFPGATimestamp();
+    }
 
-    // Trigger deadzones
-    rightTriggerDown = rightTriggerRaw >= TRIGGER_DEADZONE;
-    leftTriggerDown = leftTriggerRaw >= TRIGGER_DEADZONE;
-
-    leftFrontMotor.set(ControlMode.PercentOutput, yInput * SPEED - xInput * TURN_SPEED);
-    rightFrontMotor.set(ControlMode.PercentOutput, yInput * SPEED + xInput * TURN_SPEED);
-
-    // Shooting
-    if (rightTriggerDown && ready) {
-      shooterBottom.set(ControlMode.PercentOutput, 1);
+    if (cleanMode) {
+      rightFrontMotor.set(ControlMode.PercentOutput, CLEAN_MODE_SPEED);
+      leftFrontMotor.set(ControlMode.PercentOutput, CLEAN_MODE_SPEED);
     } else {
-      shooterBottom.set(ControlMode.PercentOutput, 0);
-    }
+      double yInput = controller.getRawAxis(1);
+      double xInput = controller.getRawAxis(0);
+      double rightTriggerRaw = controller.getRightTriggerAxis();
+      double leftTriggerRaw = controller.getLeftTriggerAxis();
 
-    // Readying
-    shooterTop.set(ControlMode.PercentOutput, controller.getLeftBumper() ? 1 : 0);
+      // Trigger deadzones
+      rightTriggerDown = rightTriggerRaw >= TRIGGER_DEADZONE;
+      leftTriggerDown = leftTriggerRaw >= TRIGGER_DEADZONE;
 
-    if (controller.getLeftBumperPressed()) {
-      ready = false;
-      readyDelay = new Delay(READY_DELAY, () -> { ready = true; });
-    }
+      leftFrontMotor.set(ControlMode.PercentOutput, yInput * SPEED - xInput * TURN_SPEED);
+      rightFrontMotor.set(ControlMode.PercentOutput, yInput * SPEED + xInput * TURN_SPEED);
 
-    if (controller.getLeftBumperReleased()) {
-      ready = false;
-    }
+      // Shooting
+      if (rightTriggerDown && ready) {
+        shooterBottom.set(ControlMode.PercentOutput, 1);
+      } else {
+        shooterBottom.set(ControlMode.PercentOutput, 0);
+      }
 
-    if (controller.getLeftBumper()) {
-      rumble = Math.min(rumble + RUMBLE_CHANGE_SPEED, 1);
-    } else {
-      // Intake
-      shooterTop.set(ControlMode.PercentOutput, -leftTriggerRaw * INTAKE_STRENGTH);
-      shooterBottom.set(ControlMode.PercentOutput, -leftTriggerRaw * INTAKE_STRENGTH);
+      // Readying
+      shooterTop.set(ControlMode.PercentOutput, controller.getLeftBumper() ? 1 : 0);
 
-      rumble = Math.max(rumble - RUMBLE_CHANGE_SPEED, 0);
+      if (controller.getLeftBumperPressed()) {
+        ready = false;
+        readyDelay = new Delay(READY_DELAY, () -> { ready = true; });
+      }
+
+      if (controller.getLeftBumperReleased()) {
+        ready = false;
+      }
+
+      if (controller.getLeftBumper()) {
+        rumble = Math.min(rumble + RUMBLE_CHANGE_SPEED, 1);
+      } else {
+        // Intake
+        shooterTop.set(ControlMode.PercentOutput, -leftTriggerRaw * INTAKE_STRENGTH);
+        shooterBottom.set(ControlMode.PercentOutput, -leftTriggerRaw * INTAKE_STRENGTH);
+
+        rumble = Math.max(rumble - RUMBLE_CHANGE_SPEED, 0);
+      }
     }
   }
 
