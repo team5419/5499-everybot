@@ -39,7 +39,7 @@ public class Robot extends TimedRobot {
   private final double AUTO_WAIT_DELAY = 9;
   private final double RUMBLE_CHANGE_SPEED = 0.02;
   private final double INTAKE_STRENGTH = 0.5;
-  private final double READY_DELAY = 2;
+  private final double READY_DELAY = 1.5;
 
   private boolean ready = false;
 
@@ -86,7 +86,7 @@ public class Robot extends TimedRobot {
   // Called when the robot starts up
   @Override
   public void robotInit() {
-    hapticTap(3);
+    rumble = 0;
 
     rightBackMotor.follow(rightFrontMotor);
     rightFrontMotor.setInverted(false);
@@ -127,8 +127,6 @@ public class Robot extends TimedRobot {
   // Called when autonomous is enabled
   @Override
   public void autonomousInit() {
-    hapticTap(2);
-
     // Readying
     shooterTop.set(ControlMode.PercentOutput, 1.0);
 
@@ -165,8 +163,6 @@ public class Robot extends TimedRobot {
   // Called when teleop mode is enabled
   @Override
   public void teleopInit() {
-    hapticTap(2);
-
     lightHue = 150;
   }
 
@@ -186,7 +182,7 @@ public class Robot extends TimedRobot {
     rightFrontMotor.set(ControlMode.PercentOutput, yInput * SPEED + xInput * TURN_SPEED);
 
     // Shooting
-    if (rightTriggerDown/* && ready*/) {
+    if (rightTriggerDown && ready) {
       shooterBottom.set(ControlMode.PercentOutput, 1);
     } else {
       shooterBottom.set(ControlMode.PercentOutput, 0);
@@ -218,17 +214,5 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopExit() {
     rumble = 0;
-  }
-
-  public void hapticTap(int count) {
-    for (int i = 0; i < count; i++) {
-      int index = delays.size();
-      Delay rumbleDelay = new Delay(0.5, () -> {
-        rumble = 1;
-        // delays.remove(index);
-      });
-
-      delays.add(rumbleDelay);
-    }
   }
 }
