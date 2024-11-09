@@ -62,6 +62,7 @@ public class Robot extends TimedRobot {
   public class Delay {
     public double startTime;
     public double delayTime;
+    public boolean isFinished = false;
     public Callback callback;
 
     public interface Callback {
@@ -75,8 +76,9 @@ public class Robot extends TimedRobot {
     }
 
     public void update() {
-      if (Timer.getFPGATimestamp() >= startTime + delayTime) {
+      if (Timer.getFPGATimestamp() >= startTime + delayTime && !isFinished) {
         callback.callback();
+        isFinished = true;
       }
     }
   }
