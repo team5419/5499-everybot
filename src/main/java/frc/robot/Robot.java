@@ -36,7 +36,7 @@ public class Robot extends TimedRobot {
   // Magic constants
   private final double SPEED = 1;
   private final double TURN_SPEED = 0.55;
-  private final double AUTO_WAIT_DELAY = 10;
+  private final double AUTO_WAIT_DELAY = 7;
   private final double RUMBLE_CHANGE_SPEED = 0.02;
   private final double INTAKE_STRENGTH = 0.5;
   private final double READY_DELAY = 2;
@@ -188,7 +188,7 @@ public class Robot extends TimedRobot {
     rightFrontMotor.set(ControlMode.PercentOutput, yInput * SPEED + xInput * TURN_SPEED);
 
     // Shooting
-    if (rightTriggerDown && ready) {
+    if (rightTriggerDown/* && ready*/) {
       shooterBottom.set(ControlMode.PercentOutput, 1);
     } else {
       shooterBottom.set(ControlMode.PercentOutput, 0);
@@ -215,6 +215,11 @@ public class Robot extends TimedRobot {
 
       rumble = Math.max(rumble - RUMBLE_CHANGE_SPEED, 0);
     }
+  }
+
+  @Override
+  public void teleopExit() {
+    rumble = 0;
   }
 
   public void hapticTap(int count) {
