@@ -219,7 +219,11 @@ public class Robot extends TimedRobot {
 
   public void hapticTap(int count) {
     for (int i = 0; i < count; i++) {
-      Delay rumbleDelay = new Delay(0.5, () -> { rumble = 1; });
+      int index = delays.size();
+      Delay rumbleDelay = new Delay(0.5, () -> {
+        rumble = 1;
+        // delays.remove(index);
+      });
 
       delays.add(rumbleDelay);
     }
