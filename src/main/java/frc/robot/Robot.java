@@ -30,8 +30,8 @@ public class Robot extends TimedRobot {
   // Number of LEDs on the strip
   private final int LED_COUNT = 8;
   // 0 is the port the LED strip is connected to on the RoboRIO
-  private AddressableLED led = new AddressableLED(1);
-  private AddressableLEDBuffer ledBuffer = new AddressableLEDBuffer(LED_COUNT);
+  // private AddressableLED led = new AddressableLED(1);
+  // private AddressableLEDBuffer ledBuffer = new AddressableLEDBuffer(LED_COUNT);
 
   // Magic constants
   private final double SPEED = 1;
@@ -99,6 +99,7 @@ public class Robot extends TimedRobot {
 
     controller.setRumble(RumbleType.kBothRumble, rumbleImportant > 0 ? rumbleImportant : rumble);
 
+    /*
     // Sets HSV value of the led at index 0
     ledBuffer.setHSV(lightIndex, lightHue, 255, 255);
     // Updates data to the buffer
@@ -113,6 +114,7 @@ public class Robot extends TimedRobot {
     if (lightHue > 180) lightHue = 0;
 
     for (Delay delay : delays) delay.update();
+    */
   }
 
   // Called when autonomous is enabled
