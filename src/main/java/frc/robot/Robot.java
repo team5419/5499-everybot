@@ -28,10 +28,10 @@ public class Robot extends TimedRobot {
   private XboxController controller = new XboxController(0);
 
   // Number of LEDs on the strip
-  // private final int LED_COUNT = 8;
+  private final int LED_COUNT = 8;
   // 0 is the port the LED strip is connected to on the RoboRIO
-  // private AddressableLED led = new AddressableLED(1);
-  // private AddressableLEDBuffer ledBuffer = new AddressableLEDBuffer(LED_COUNT);
+  private AddressableLED led = new AddressableLED(1);
+  private AddressableLEDBuffer ledBuffer = new AddressableLEDBuffer(LED_COUNT);
 
   // Magic constants
   private final double SPEED = 1;
@@ -163,7 +163,7 @@ public class Robot extends TimedRobot {
   // Called when teleop mode is enabled
   @Override
   public void teleopInit() {
-    lightHue = 150;
+
   }
 
   // Called every 20 ms in teleop mode
