@@ -36,7 +36,7 @@ public class Robot extends TimedRobot {
   // Magic constants
   private final double SPEED = 1;
   private final double TURN_SPEED = 0.55;
-  private final double AUTO_WAIT_DELAY = 10;
+  private final double AUTO_WAIT_DELAY = 9;
   private final double RUMBLE_CHANGE_SPEED = 0.02;
   private final double INTAKE_STRENGTH = 0.5;
   private final double READY_DELAY = 2;
@@ -134,7 +134,7 @@ public class Robot extends TimedRobot {
     // Readying
     shooterTop.set(ControlMode.PercentOutput, 1.0);
 
-    Timer.delay(3);
+    Timer.delay(4);
 
     // Shoot
     shooterBottom.set(ControlMode.PercentOutput, 1.0);
