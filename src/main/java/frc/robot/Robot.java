@@ -97,18 +97,18 @@ public class Robot extends TimedRobot {
 
     controller.setRumble(RumbleType.kBothRumble, rumbleImportant > 0 ? rumbleImportant : rumble);
 
-    // // Sets HSV value of the led at index 0
-    // ledBuffer.setHSV(lightIndex, lightHue, 255, 255);
-    // // Updates data to the buffer
-    // led.setData(ledBuffer);
-    // // Continously writes data to the led from the buffer
-    // led.start();
+    // Sets HSV value of the led at index 0
+    ledBuffer.setHSV(lightIndex, lightHue, 255, 255);
+    // Updates data to the buffer
+    led.setData(ledBuffer);
+    // Continously writes data to the led from the buffer
+    led.start();
 
-    // lightIndex++;
-    // lightHue++;
+    lightIndex++;
+    lightHue++;
 
-    // if (lightIndex > LED_COUNT) lightIndex = 0;
-    // if (lightHue > 180) lightHue = 0;
+    if (lightIndex > LED_COUNT) lightIndex = 0;
+    if (lightHue > 180) lightHue = 0;
   }
 
   // Called when autonomous is enabled
