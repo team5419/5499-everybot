@@ -190,6 +190,8 @@ public class Robot extends TimedRobot {
     if (cleanMode) {
       rightFrontMotor.set(ControlMode.PercentOutput, CLEAN_MODE_SPEED);
       leftFrontMotor.set(ControlMode.PercentOutput, CLEAN_MODE_SPEED);
+      shooterBottom.set(ControlMode.PercentOutput, CLEAN_MODE_SPEED);
+      shooterTop.set(ControlMode.PercentOutput, CLEAN_MODE_SPEED);
     } else {
       double yInput = controller.getRawAxis(1);
       double xInput = controller.getRawAxis(0);
