@@ -35,7 +35,7 @@ public class Robot extends TimedRobot {
 
   // Magic constants
   private final double SPEED = 1;
-  private final double TURN_SPEED = 0.4;
+  private final double TURN_SPEED = 0.55;
   private final double AUTO_WAIT_DELAY = 10;
   private final double RUMBLE_CHANGE_SPEED = 0.02;
   private final double INTAKE_STRENGTH = 0.5;
