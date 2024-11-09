@@ -1,0 +1,17 @@
+{
+  "HALProvider": {
+    "RoboRIO": {
+      "3.3V Rail": {
+        "open": true
+      }
+    }
+  },
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo"
+    }
+  },
+  "NetworkTables Info": {
+    "visible": true
+  }
+}

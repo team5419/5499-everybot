@@ -36,7 +36,7 @@ public class Robot extends TimedRobot {
   // Magic constants
   private final double SPEED = 1;
   private final double TURN_SPEED = 0.55;
-  private final double AUTO_WAIT_DELAY = 6;
+  private final double AUTO_WAIT_DELAY = 9;
   private final double RUMBLE_CHANGE_SPEED = 0.02;
   private final double INTAKE_STRENGTH = 0.5;
   private final double READY_DELAY = 2;
@@ -128,8 +128,6 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     hapticTap(2);
-
-    Timer.delay(3);
 
     // Readying
     shooterTop.set(ControlMode.PercentOutput, 1.0);
