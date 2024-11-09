@@ -28,7 +28,7 @@ public class Robot extends TimedRobot {
   private XboxController controller = new XboxController(0);
 
   // Number of LEDs on the strip
-  private final int LED_COUNT = 8;
+  // private final int LED_COUNT = 8;
   // 0 is the port the LED strip is connected to on the RoboRIO
   // private AddressableLED led = new AddressableLED(1);
   // private AddressableLEDBuffer ledBuffer = new AddressableLEDBuffer(LED_COUNT);
@@ -39,8 +39,9 @@ public class Robot extends TimedRobot {
   private final double AUTO_WAIT_DELAY = 10;
   private final double RUMBLE_CHANGE_SPEED = 0.02;
   private final double INTAKE_STRENGTH = 0.5;
+  private final double READY_DELAY = 2;
 
-  private boolean readying = false;
+  private boolean ready = false;
 
   // Trigger input
   private final double TRIGGER_DEADZONE = 0.5;
@@ -54,7 +55,9 @@ public class Robot extends TimedRobot {
   private double rumble = 0;
   private double rumbleImportant = 0;
 
+  // Delays
   private List<Delay> delays = new ArrayList<>();
+  private Delay readyDelay;
 
   public class Delay {
     private double startTime;
@@ -65,8 +68,8 @@ public class Robot extends TimedRobot {
       public void callback();
     }
 
-    public Delay(double _startTime, double _delayTime, Callback _callback) {
-      startTime = _startTime;
+    public Delay(double _delayTime, Callback _callback) {
+      startTime = Timer.getFPGATimestamp();
       delayTime = _delayTime;
       callback = _callback;
     }
@@ -99,6 +102,10 @@ public class Robot extends TimedRobot {
 
     controller.setRumble(RumbleType.kBothRumble, rumbleImportant > 0 ? rumbleImportant : rumble);
 
+    // Update delays
+    for (Delay delay : delays) delay.update();
+    if (readyDelay != null) readyDelay.update();
+
     /*
     // Sets HSV value of the led at index 0
     ledBuffer.setHSV(lightIndex, lightHue, 255, 255);
@@ -112,8 +119,6 @@ public class Robot extends TimedRobot {
 
     if (lightIndex > LED_COUNT) lightIndex = 0;
     if (lightHue > 180) lightHue = 0;
-
-    for (Delay delay : delays) delay.update();
     */
   }
 
@@ -182,27 +187,31 @@ public class Robot extends TimedRobot {
     shooterBottom.set(ControlMode.PercentOutput, rightTriggerDown ? 1 : 0);
 
     // Readying
-    readying = controller.getLeftBumper();
-    shooterTop.set(ControlMode.PercentOutput, readying ? 1 : 0);
+    shooterTop.set(ControlMode.PercentOutput, controller.getLeftBumper() ? 1 : 0);
 
-    if (!readying) {
+    if (controller.getLeftBumperPressed()) {
+      ready = false;
+      readyDelay = new Delay(READY_DELAY, () -> { ready = true; });
+    }
+
+    if (controller.getLeftBumperReleased()) {
+      ready = false;
+    }
+
+    if (controller.getLeftBumper()) {
+      rumble = Math.min(rumble + RUMBLE_CHANGE_SPEED, 1);
+    } else {
       // Intake
       shooterTop.set(ControlMode.PercentOutput, -leftTriggerRaw * INTAKE_STRENGTH);
       shooterBottom.set(ControlMode.PercentOutput, -leftTriggerRaw * INTAKE_STRENGTH);
 
       rumble = Math.max(rumble - RUMBLE_CHANGE_SPEED, 0);
-    } else {
-      rumble = Math.min(rumble + RUMBLE_CHANGE_SPEED, 1);
     }
   }
 
   public void hapticTap(int count) {
     for (int i = 0; i < count; i++) {
-      Delay rumbleDelay = new Delay(
-        Timer.getFPGATimestamp(),
-        0.5,
-        () -> { rumble = 1; }
-      );
+      Delay rumbleDelay = new Delay(0.5, () -> { rumble = 1; });
 
       delays.add(rumbleDelay);
     }
