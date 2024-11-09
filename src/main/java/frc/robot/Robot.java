@@ -184,7 +184,11 @@ public class Robot extends TimedRobot {
     rightFrontMotor.set(ControlMode.PercentOutput, yInput * SPEED + xInput * TURN_SPEED);
 
     // Shooting
-    shooterBottom.set(ControlMode.PercentOutput, rightTriggerDown ? 1 : 0);
+    if (rightTriggerDown && ready) {
+      shooterBottom.set(ControlMode.PercentOutput, 1);
+    } else {
+      shooterBottom.set(ControlMode.PercentOutput, 0);
+    }
 
     // Readying
     shooterTop.set(ControlMode.PercentOutput, controller.getLeftBumper() ? 1 : 0);
