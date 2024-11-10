@@ -49,6 +49,7 @@ public class Robot extends TimedRobot {
   private final double CLEAN_MODE_ACTIVATE_TIME = 3;
   private boolean cleanMode = false;
   private double cleanTimestamp = 0.0;
+  private boolean cleanPaused = false;
 
   // Trigger input
   private final double TRIGGER_DEADZONE = 0.5;
@@ -185,13 +186,20 @@ public class Robot extends TimedRobot {
     ) {
       cleanMode = !cleanMode;
       cleanTimestamp = Timer.getFPGATimestamp();
+      cleanPaused = false;
     }
 
     if (cleanMode) {
-      rightFrontMotor.set(ControlMode.PercentOutput, CLEAN_MODE_SPEED);
-      leftFrontMotor.set(ControlMode.PercentOutput, CLEAN_MODE_SPEED);
-      shooterBottom.set(ControlMode.PercentOutput, CLEAN_MODE_SPEED);
-      shooterTop.set(ControlMode.PercentOutput, CLEAN_MODE_SPEED);
+      if (controller.getBButtonPressed()) {
+        cleanPaused = !cleanPaused;
+      }
+
+      if (!cleanPaused) {
+        rightFrontMotor.set(ControlMode.PercentOutput, CLEAN_MODE_SPEED);
+        leftFrontMotor.set(ControlMode.PercentOutput, CLEAN_MODE_SPEED);
+        shooterBottom.set(ControlMode.PercentOutput, CLEAN_MODE_SPEED);
+        shooterTop.set(ControlMode.PercentOutput, CLEAN_MODE_SPEED);
+      }
     } else {
       double yInput = controller.getRawAxis(1);
       double xInput = controller.getRawAxis(0);
