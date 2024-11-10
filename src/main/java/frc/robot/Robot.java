@@ -33,7 +33,9 @@ public class Robot extends TimedRobot {
   private AddressableLED led = new AddressableLED(1);
   private AddressableLEDBuffer ledBuffer = new AddressableLEDBuffer(LED_COUNT);
 
+  // Autonomous
   private final double AUTO_WAIT_DELAY = 9;
+  private final boolean AUTO_TAXI = true;
 
   // Speeds
   private final double SPEED = 1;
@@ -153,15 +155,17 @@ public class Robot extends TimedRobot {
     shooterTop.set(ControlMode.PercentOutput, 0);
     shooterBottom.set(ControlMode.PercentOutput, 0);
 
-    // Move back
-    rightFrontMotor.set(ControlMode.PercentOutput, 1);
-    leftFrontMotor.set(ControlMode.PercentOutput, 1);
+    if (AUTO_TAXI) {
+      // Taxi
+      rightFrontMotor.set(ControlMode.PercentOutput, 1);
+      leftFrontMotor.set(ControlMode.PercentOutput, 1);
 
-    Timer.delay(0.5);
+      Timer.delay(0.5);
 
-    // Stop
-    rightFrontMotor.set(ControlMode.PercentOutput, 0);
-    leftFrontMotor.set(ControlMode.PercentOutput, 0);
+      // Stop
+      rightFrontMotor.set(ControlMode.PercentOutput, 0);
+      leftFrontMotor.set(ControlMode.PercentOutput, 0);
+    }
 
     lightHue = 0;
   }
