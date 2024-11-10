@@ -45,7 +45,8 @@ public class Robot extends TimedRobot {
   private boolean ready = false;
 
   // Clean mode
-  private final double CLEAN_MODE_SPEED = 0.1;
+  private final double CLEAN_MODE_DRIVE_SPEED = 0.1;
+  private final double CLEAN_MODE_SHOOTER_SPEED = 0.1;
   private final double CLEAN_MODE_ACTIVATE_TIME = 3;
   private boolean cleanMode = false;
   private double cleanTimestamp = 0.0;
@@ -195,10 +196,10 @@ public class Robot extends TimedRobot {
       }
 
       if (!cleanPaused) {
-        rightFrontMotor.set(ControlMode.PercentOutput, CLEAN_MODE_SPEED);
-        leftFrontMotor.set(ControlMode.PercentOutput, CLEAN_MODE_SPEED);
-        shooterBottom.set(ControlMode.PercentOutput, CLEAN_MODE_SPEED);
-        shooterTop.set(ControlMode.PercentOutput, CLEAN_MODE_SPEED);
+        rightFrontMotor.set(ControlMode.PercentOutput, CLEAN_MODE_DRIVE_SPEED);
+        leftFrontMotor.set(ControlMode.PercentOutput, CLEAN_MODE_DRIVE_SPEED);
+        shooterBottom.set(ControlMode.PercentOutput, CLEAN_MODE_SHOOTER_SPEED);
+        shooterTop.set(ControlMode.PercentOutput, CLEAN_MODE_SHOOTER_SPEED);
       }
     } else {
       double yInput = controller.getRawAxis(1);
