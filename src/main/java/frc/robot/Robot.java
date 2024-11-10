@@ -51,6 +51,7 @@ public class Robot extends TimedRobot {
   private boolean cleanMode = false;
   private double cleanTimestamp = 0.0;
   private boolean cleanPaused = false;
+  private double cleanSpeedBase = 1;
 
   // Trigger input
   private final double TRIGGER_DEADZONE = 0.5;
@@ -188,6 +189,7 @@ public class Robot extends TimedRobot {
       cleanMode = !cleanMode;
       cleanTimestamp = Timer.getFPGATimestamp();
       cleanPaused = false;
+      cleanSpeedBase = 1;
     }
 
     if (cleanMode) {
@@ -196,10 +198,13 @@ public class Robot extends TimedRobot {
       }
 
       if (!cleanPaused) {
-        rightFrontMotor.set(ControlMode.PercentOutput, CLEAN_MODE_DRIVE_SPEED);
-        leftFrontMotor.set(ControlMode.PercentOutput, CLEAN_MODE_DRIVE_SPEED);
-        shooterBottom.set(ControlMode.PercentOutput, CLEAN_MODE_SHOOTER_SPEED);
-        shooterTop.set(ControlMode.PercentOutput, CLEAN_MODE_SHOOTER_SPEED);
+        rightFrontMotor.set(ControlMode.PercentOutput, CLEAN_MODE_DRIVE_SPEED * cleanSpeedBase);
+        leftFrontMotor.set(ControlMode.PercentOutput, CLEAN_MODE_DRIVE_SPEED * cleanSpeedBase);
+        shooterBottom.set(ControlMode.PercentOutput, CLEAN_MODE_SHOOTER_SPEED * cleanSpeedBase);
+        shooterTop.set(ControlMode.PercentOutput, CLEAN_MODE_SHOOTER_SPEED * cleanSpeedBase);
+
+        double speedChange = (leftTriggerDown ? 1 : 0) + (rightTriggerDown ? -1 : 0);
+        cleanSpeedBase += speedChange * 0.02;
       }
     } else {
       double yInput = controller.getRawAxis(1);
