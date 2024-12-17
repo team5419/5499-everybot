@@ -18,12 +18,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends TimedRobot {
   private final VictorSPX rightBackMotor = new VictorSPX(1);
-  private final TalonSRX rightFrontMotor = new TalonSRX(2);
+  private final VictorSPX rightFrontMotor = new VictorSPX(2);
   private final TalonSRX leftBackMotor = new TalonSRX(3);
   private final TalonSRX leftFrontMotor = new TalonSRX(4);
-  private final VictorSPX shooterTop = new VictorSPX(5);
-  private final VictorSPX shooterBottom = new VictorSPX(6);
-  private final TalonSRX groundIntake = new TalonSRX(7);
+  private final TalonSRX shooterTop = new TalonSRX(5);
+  private final TalonSRX shooterBottom = new TalonSRX(6);
+  // private final TalonSRX groundIntake = new TalonSRX(7);
 
   // 0 is the USB port to be used as indicated on Driver Station
   private XboxController controller = new XboxController(0);
@@ -185,11 +185,11 @@ public class Robot extends TimedRobot {
     }
 
     // Ground intake
-    if (leftTriggerDown) {
-      groundIntake.set(ControlMode.PercentOutput, GROUND_INTAKE_SPEED);
-    } else {
-      groundIntake.set(ControlMode.PercentOutput, 0);
-    }
+    // if (leftTriggerDown) {
+    //   groundIntake.set(ControlMode.PercentOutput, GROUND_INTAKE_SPEED);
+    // } else {
+    //   groundIntake.set(ControlMode.PercentOutput, 0);
+    // }
 
     // Readying
     shooterTop.set(ControlMode.PercentOutput, controller.getLeftBumper() ? 1 : 0);
