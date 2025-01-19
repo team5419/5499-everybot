@@ -8,6 +8,9 @@ import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkLowLevel.MotorType;
+
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.XboxController;
@@ -24,6 +27,7 @@ public class Robot extends TimedRobot {
   private final TalonSRX shooterTop = new TalonSRX(5);
   private final TalonSRX shooterBottom = new TalonSRX(6);
   // private final TalonSRX groundIntake = new TalonSRX(7);
+  private final CANSparkMax coralIntake = new CANSparkMax(8, MotorType.kBrushless);
 
   // 0 is the USB port to be used as indicated on Driver Station
   private XboxController controller = new XboxController(0);
@@ -178,11 +182,11 @@ public class Robot extends TimedRobot {
     rightFrontMotor.set(ControlMode.PercentOutput, yInput * SPEED + xInput * TURN_SPEED);
 
     // Shooting
-    if (rightTriggerDown && ready) {
-      shooterBottom.set(ControlMode.PercentOutput, 1);
-    } else {
-      shooterBottom.set(ControlMode.PercentOutput, 0);
-    }
+    // if (rightTriggerDown && ready) {
+    //   shooterBottom.set(ControlMode.PercentOutput, 1);
+    // } else {
+    //   shooterBottom.set(ControlMode.PercentOutput, 0);
+    // }
 
     // Ground intake
     // if (leftTriggerDown) {
@@ -191,27 +195,36 @@ public class Robot extends TimedRobot {
     //   groundIntake.set(ControlMode.PercentOutput, 0);
     // }
 
-    // Readying
-    shooterTop.set(ControlMode.PercentOutput, controller.getLeftBumper() ? 1 : 0);
-
-    if (controller.getLeftBumperPressed()) {
-      ready = false;
-      readyDelay = new Delay(READY_DELAY, () -> { ready = true; });
-    }
-
-    if (controller.getLeftBumperReleased()) {
-      ready = false;
-    }
-
-    if (controller.getLeftBumper()) {
-      rumble = Math.min(rumble + RUMBLE_CHANGE_SPEED, 1);
+    // Coral intake
+    if (rightTriggerDown) {
+      coralIntake.set(1);
+    } else if (leftTriggerDown) {
+      coralIntake.set(-1);
     } else {
-      // Intake
-      shooterTop.set(ControlMode.PercentOutput, -leftTriggerRaw * INTAKE_STRENGTH);
-      shooterBottom.set(ControlMode.PercentOutput, -leftTriggerRaw * INTAKE_STRENGTH);
-
-      rumble = Math.max(rumble - RUMBLE_CHANGE_SPEED, 0);
+      coralIntake.set(0);
     }
+
+    // Readying
+    // shooterTop.set(ControlMode.PercentOutput, controller.getLeftBumper() ? 1 : 0);
+
+    // if (controller.getLeftBumperPressed()) {
+    //   ready = false;
+    //   readyDelay = new Delay(READY_DELAY, () -> { ready = true; });
+    // }
+
+    // if (controller.getLeftBumperReleased()) {
+    //   ready = false;
+    // }
+
+    // if (controller.getLeftBumper()) {
+    //   rumble = Math.min(rumble + RUMBLE_CHANGE_SPEED, 1);
+    // } else {
+    //   // Intake
+    //   shooterTop.set(ControlMode.PercentOutput, -leftTriggerRaw * INTAKE_STRENGTH);
+    //   shooterBottom.set(ControlMode.PercentOutput, -leftTriggerRaw * INTAKE_STRENGTH);
+
+    //   rumble = Math.max(rumble - RUMBLE_CHANGE_SPEED, 0);
+    // }
   }
 
   @Override
