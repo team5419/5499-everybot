@@ -48,6 +48,7 @@ public class Robot extends TimedRobot {
   private final double SPEED = 1;
   private final double TURN_SPEED = 0.55;
   private final double INTAKE_STRENGTH = 0.5;
+  private final double CORAL_INTAKE_STRENGTH = 0.25;
 
   // Ready
   private final double READY_DELAY = 1.5;
@@ -202,10 +203,10 @@ public class Robot extends TimedRobot {
     // }
 
     // Coral intake
-    if (rightTriggerDown) {
-      coralIntake.set(1);
-    } else if (leftTriggerDown) {
-      coralIntake.set(-1);
+    if (leftTriggerDown) {
+      coralIntake.set(CORAL_INTAKE_STRENGTH);
+    } else if (rightTriggerDown) {
+      coralIntake.set(-CORAL_INTAKE_STRENGTH);
     } else {
       coralIntake.set(0);
     }
