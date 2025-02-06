@@ -27,7 +27,9 @@ public class Robot extends TimedRobot {
   private final TalonSRX shooterTop = new TalonSRX(5);
   private final TalonSRX shooterBottom = new TalonSRX(6);
   // private final TalonSRX groundIntake = new TalonSRX(7);
-  private final CANSparkMax coralIntake = new CANSparkMax(8, MotorType.kBrushless);
+  private final CANSparkMax algaeDisloger = new CANSparkMax(7, MotorType.kBrushless);
+  private final CANSparkMax coralIntake = new CANSparkMax(18, MotorType.kBrushless);
+
 
   // 0 is the USB port to be used as indicated on Driver Station
   private XboxController controller = new XboxController(0);
@@ -178,6 +180,10 @@ public class Robot extends TimedRobot {
     rightTriggerDown = rightTriggerRaw >= TRIGGER_DEADZONE;
     leftTriggerDown = leftTriggerRaw >= TRIGGER_DEADZONE;
 
+    // Bumpers
+    boolean rightBumperDown = controller.getRightBumper();
+    boolean leftBumperDown = controller.getLeftBumper();
+
     leftFrontMotor.set(ControlMode.PercentOutput, yInput * SPEED - xInput * TURN_SPEED);
     rightFrontMotor.set(ControlMode.PercentOutput, yInput * SPEED + xInput * TURN_SPEED);
 
@@ -202,6 +208,15 @@ public class Robot extends TimedRobot {
       coralIntake.set(-1);
     } else {
       coralIntake.set(0);
+    }
+
+    // Algae disloging
+    if (rightBumperDown) {
+      algaeDisloger.set(1);
+    } else if (leftBumperDown) {
+      algaeDisloger.set(-1);
+    } else {
+      algaeDisloger.set(0);
     }
 
     // Readying
